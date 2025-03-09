@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4A90E2;
+        }
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 15px;
+            background-color: #4A90E2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #357ABD;
+        }
+        form {
+            text-align: left;
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            color: #333;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #4A90E2;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #f9f9ff;
+        }
+        button {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 15px;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #357ABD;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Resume Builder</h1>
+        <a href="{{ url_for('login') }}">Login</a>
+
+        <!-- Login Section -->
+        <h1>Login</h1>
+        <form method="POST">
+            <label for="user_type">Login as:</label>
+            <select name="user_type" id="user_type" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <!-- User Login Fields -->
+            <div id="user_fields">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password">
+            </div>
+
+            <!-- Admin Login Fields -->
+            <div id="admin_fields" style="display: none;">
+                <label for="email">Admin Email:</label>
+                <input type="email" id="email" name="email">
+                <label for="password">Password:</label>
+                <input type="password" id="admin_password" name="password">
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        // Show/hide fields based on user type selection
+        document.getElementById("user_type").addEventListener("change", function() {
+            const userFields = document.getElementById("user_fields");
+            const adminFields = document.getElementById("admin_fields");
+            if (this.value === "user") {
+                userFields.style.display = "block";
+                adminFields.style.display = "none";
+            } else {
+                userFields.style.display = "none";
+                adminFields.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>

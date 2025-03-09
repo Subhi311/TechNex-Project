@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            margin: 20px;
+            color: #fff;
+        }
+        h1, h2, h3 {
+            color: #fff;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: #222;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        table, th, td {
+            border: 1px solid #444;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: #fff;
+        }
+        th {
+            background-color: #333;
+        }
+        input {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #666;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+        }
+        button {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            margin: auto;
+        }
+        button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <h2>Resume Analytics</h2>
+        <p>Total Resumes Generated: <strong id="total-resumes">0</strong></p>
+        <input type="number" id="total-resumes-input" placeholder="Enter total resumes" oninput="updateText('total-resumes', this.value)">
+
+        <h3>Resumes Generated Per User</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Resumes Generated</th>
+                </tr>
+            </thead>
+            <tbody id="user-stats"></tbody>
+        </table>
+        <button onclick="addRow('user-stats', 2)">Add User</button>
+
+        <h2>Template Usage</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Template</th>
+                    <th>Usage Count</th>
+                </tr>
+            </thead>
+            <tbody id="template-stats"></tbody>
+        </table>
+        <button onclick="addRow('template-stats', 2)">Add Template</button>
+
+        <h2>Credit Usage</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Credits Used</th>
+                    <th>Last Refresh</th>
+                </tr>
+            </thead>
+            <tbody id="credit-usage"></tbody>
+        </table>
+        <button onclick="addRow('credit-usage', 3)">Add Credit Entry</button>
+    </div>
+
+    <script>
+        function updateText(id, value) {
+            document.getElementById(id).innerText = value;
+        }
+
+        function addRow(tableId, columns) {
+            const table = document.getElementById(tableId);
+            const newRow = table.insertRow();
+            for (let i = 0; i < columns; i++) {
+                const cell = newRow.insertCell(i);
+                const input = document.createElement("input");
+                input.type = i === 1 ? "number" : (i === 2 ? "date" : "text");
+                cell.appendChild(input);
+            }
+        }
+    </script>
+</body>
+</html>

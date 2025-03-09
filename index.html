@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Assistant Chatbot</title>
+    <style>
+        /* Pink and White Color Palette */
+        :root {
+            --primary-color: #ff69b4; /* Pink */
+            --secondary-color: #ffffff; /* White */
+            --accent-color: #ff6f61; /* Coral (for buttons) */
+            --background-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --message-user-bg: var(--primary-color);
+            --message-bot-bg: #f1f1f1;
+            --button-bg: var(--accent-color);
+            --button-hover-bg: #ff4d4d;
+            --text-color: #333;
+            --text-light: #fff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--secondary-color);
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative; /* For positioning the uploaded image */
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background-color: var(--primary-color); /* Use the pink color */
+            color: var(--text-light); /* White text */
+            padding: 16px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            border-bottom: 1px solid #e0e0e0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #f1f1f1;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-end;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message span {
+            padding: 12px 16px;
+            border-radius: 20px;
+            max-width: 70%;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.user span {
+            background: var(--message-user-bg);
+            color: var(--text-light);
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot span {
+            background: var(--message-bot-bg);
+            color: var(--text-color);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            align-items: center; /* Vertically center items */
+            gap: 8px; /* Space between items */
+            padding: 16px; /* Padding around the taskbar */
+            background-color: var(--secondary-color);
+            border-top: 1px solid #e0e0e0;
+            height: 80px; /* Increased height of the taskbar */
+        }
+
+        .chat-input input {
+            flex-grow: 1; /* Allow the input field to take up remaining space */
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .chat-input button {
+            background: var(--button-bg);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            flex-shrink: 0; /* Prevent the button from shrinking */
+        }
+
+        .chat-input button:hover {
+            background: var(--button-hover-bg);
+        }
+
+        .chat-input button:active {
+            transform: scale(0.95);
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .message-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .message-actions button:hover {
+            color: var(--primary-color);
+        }
+
+        .message-actions button.thumbs-down:hover {
+            color: var(--button-hover-bg);
+        }
+
+        /* Uploaded image container */
+        .uploaded-image-container {
+            position: absolute;
+            bottom: 16px; /* Adjusted position */
+            left: 16px; /* Adjusted position */
+            width: 48px; /* Increased size */
+            height: 48px; /* Increased size */
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+            display: none; /* Hidden by default */
+        }
+
+        .uploaded-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Image upload button */
+        .image-upload-button {
+            width: 48px; /* Size of the upload button */
+            height: 48px; /* Size of the upload button */
+            background: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px; /* Size of the "+" icon */
+            transition: background-color 0.3s ease;
+            flex-shrink: 0; /* Prevent the button from shrinking */
+        }
+
+        .image-upload-button:hover {
+            background: var(--button-hover-bg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            Hi, I'm Droid. I am here to help you make your resume ATS friendly.
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will be dynamically added here -->
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input">
+            <button class="image-upload-button" id="image-upload-button">+</button>
+            <input type="text" id="chat-input" placeholder="Type a message...">
+            <button id="send-button">Send</button>
+        </div>
+
+        <!-- Uploaded Image Container -->
+        <div class="uploaded-image-container" id="uploaded-image-container">
+            <img id="uploaded-image" src="" alt="Uploaded Image">
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+        const imageUploadButton = document.getElementById('image-upload-button');
+        const uploadedImageContainer = document.getElementById('uploaded-image-container');
+        const uploadedImage = document.getElementById('uploaded-image');
+
+        // Function to add a message to the chat
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+
+            const messageContent = document.createElement('span');
+            messageContent.textContent = text;
+
+            messageDiv.appendChild(messageContent);
+
+            // Add actions (copy, thumbs up, thumbs down) for bot messages
+            if (sender === 'bot') {
+                const actionsDiv = document.createElement('div');
+                actionsDiv.classList.add('message-actions');
+
+                // Copy button
+                const copyButton = document.createElement('button');
+                copyButton.textContent = '📋 Copy';
+                copyButton.addEventListener('click', () => {
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert('Copied to clipboard!');
+                    });
+                });
+
+                // Thumbs up button
+                const thumbsUpButton = document.createElement('button');
+                thumbsUpButton.textContent = '👍';
+                thumbsUpButton.addEventListener('click', () => {
+                    alert('You liked this response!');
+                });
+
+                // Thumbs down button
+                const thumbsDownButton = document.createElement('button');
+                thumbsDownButton.textContent = '👎';
+                thumbsDownButton.classList.add('thumbs-down');
+                thumbsDownButton.addEventListener('click', () => {
+                    alert('You disliked this response!');
+                });
+
+                actionsDiv.appendChild(copyButton);
+                actionsDiv.appendChild(thumbsUpButton);
+                actionsDiv.appendChild(thumbsDownButton);
+                messageDiv.appendChild(actionsDiv);
+            }
+
+            chatMessages.appendChild(messageDiv);
+            // Auto-scroll to the bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to generate domain-specific keywords
+        function getDomainKeywords(domain) {
+            const keywords = {
+                "software engineer": [
+                    "Java", "Python", "JavaScript", "React", "Node.js",
+                    "Agile", "Git", "REST APIs", "Microservices", "DevOps"
+                ],
+                "data scientist": [
+                    "Machine Learning", "Python", "SQL", "Pandas", "NumPy",
+                    "Data Visualization", "TensorFlow", "Scikit-learn", "Big Data", "Tableau"
+                ],
+                "product manager": [
+                    "Product Lifecycle", "Agile", "Scrum", "Roadmapping", "Stakeholder Management",
+                    "Market Research", "User Stories", "KPIs", "Go-to-Market Strategy", "JIRA"
+                ],
+                "ux designer": [
+                    "User Research", "Wireframing", "Prototyping", "Figma", "Adobe XD",
+                    "Usability Testing", "Interaction Design", "User-Centered Design", "Information Architecture", "Responsive Design"
+                ],
+                "cybersecurity analyst": [
+                    "Network Security", "Firewalls", "SIEM", "Penetration Testing", "Incident Response",
+                    "Threat Analysis", "Vulnerability Assessment", "Compliance", "Encryption", "Cybersecurity Frameworks"
+                ],
+                "cloud engineer": [
+                    "AWS", "Azure", "Google Cloud", "Kubernetes", "Docker",
+                    "CI/CD", "Infrastructure as Code", "Terraform", "Serverless", "Cloud Security"
+                ],
+                "marketing manager": [
+                    "Digital Marketing", "SEO", "Content Strategy", "Social Media", "Email Marketing",
+                    "Campaign Management", "Analytics", "CRM", "Brand Management", "ROI Optimization"
+                ],
+                "financial analyst": [
+                    "Financial Modeling", "Excel", "Valuation", "Forecasting", "Budgeting",
+                    "Data Analysis", "Risk Management", "GAAP", "Investment Analysis", "Power BI"
+                ],
+                "hr manager": [
+                    "Recruitment", "Employee Relations", "Performance Management", "Compensation", "Talent Acquisition",
+                    "HRIS", "Onboarding", "Training and Development", "Compliance", "Workforce Planning"
+                ],
+                "sales executive": [
+                    "Lead Generation", "CRM", "Negotiation", "Sales Pipeline", "Customer Relationship Management",
+                    "Revenue Growth", "Cold Calling", "Sales Strategy", "Account Management", "Closing Techniques"
+                ]
+            };
+
+            return keywords[domain.toLowerCase()] || ["No keywords found for this domain. Please specify a valid job role."];
+        }
+
+        // Function to generate a logical bot response
+        function getBotResponse(userMessage) {
+            userMessage = userMessage.toLowerCase();
+
+            if (userMessage.includes("hello") || userMessage.includes("hi")) {
+                return "Hi there! I'm your tech assistant. I can help you build an ATS-friendly resume. What job role are you targeting?";
+            } else if (userMessage.includes("keywords")) {
+                return "Sure! Please specify the domain or job role (e.g., Software Engineer, Data Scientist, Product Manager).";
+            } else if (userMessage.includes("software engineer") || userMessage.includes("developer")) {
+                return `For a Software Engineer role, here are some ATS-friendly keywords:\n${getDomainKeywords("software engineer").join(", ")}`;
+            } else if (userMessage.includes("data scientist")) {
+                return `For a Data Scientist role, here are some ATS-friendly keywords:\n${getDomainKeywords("data scientist").join(", ")}`;
+            } else if (userMessage.includes("product manager")) {
+                return `For a Product Manager role, here are some ATS-friendly keywords:\n${getDomainKeywords("product manager").join(", ")}`;
+            } else if (userMessage.includes("ux designer")) {
+                return `For a UX Designer role, here are some ATS-friendly keywords:\n${getDomainKeywords("ux designer").join(", ")}`;
+            } else if (userMessage.includes("cybersecurity analyst")) {
+                return `For a Cybersecurity Analyst role, here are some ATS-friendly keywords:\n${getDomainKeywords("cybersecurity analyst").join(", ")}`;
+            } else if (userMessage.includes("cloud engineer")) {
+                return `For a Cloud Engineer role, here are some ATS-friendly keywords:\n${getDomainKeywords("cloud engineer").join(", ")}`;
+            } else if (userMessage.includes("marketing manager")) {
+                return `For a Marketing Manager role, here are some ATS-friendly keywords:\n${getDomainKeywords("marketing manager").join(", ")}`;
+            } else if (userMessage.includes("financial analyst")) {
+                return `For a Financial Analyst role, here are some ATS-friendly keywords:\n${getDomainKeywords("financial analyst").join(", ")}`;
+            } else if (userMessage.includes("hr manager")) {
+                return `For an HR Manager role, here are some ATS-friendly keywords:\n${getDomainKeywords("hr manager").join(", ")}`;
+            } else if (userMessage.includes("sales executive")) {
+                return `For a Sales Executive role, here are some ATS-friendly keywords:\n${getDomainKeywords("sales executive").join(", ")}`;
+            } else if (userMessage.includes("thank you") || userMessage.includes("thanks")) {
+                return "You're welcome! Let me know if you need more help.";
+            } else if (userMessage.includes("bye") || userMessage.includes("goodbye")) {
+                return "Goodbye! Good luck with your resume and job search!";
+            } else {
+                return "I'm here to help you build an ATS-friendly resume. You can ask me about keywords or summaries!";
+            }
+        }
+
+        // Event listener for the send button
+        sendButton.addEventListener('click', () => {
+            const userMessage = chatInput.value.trim();
+            if (userMessage) {
+                addMessage(userMessage, 'user');
+                chatInput.value = ''; // Clear the input field
+
+                // Simulate a bot response after a short delay
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userMessage);
+                    addMessage(botResponse, 'bot');
+                }, 1000);
+            }
+        });
+
+        // Event listener for pressing Enter in the input field
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+        // Event listener for image upload button
+        imageUploadButton.addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadedImage.src = event.target.result;
+                        uploadedImageContainer.style.display = 'block';
+                        imageUploadButton.style.display = 'none'; // Hide the upload button after image is uploaded
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        });
+
+        // Initial bot message
+        setTimeout(() => {
+            addMessage("Hi! I'm your tech assistant. I can help you build an ATS-friendly resume. What job role are you targeting?", 'bot');
+        }, 500);
+    </script>
+</body>
+</html>

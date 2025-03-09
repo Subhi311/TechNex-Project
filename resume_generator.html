@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #ffe6f0; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            display: flex; 
+            justify-content: center;
+            max-width: 800px;
+            margin: auto;
+        }
+        .form-container { 
+            width: 100%; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.2);
+            border: 2px solid #ff69b4;
+        }
+        h1 {
+            text-align: center;
+            color: #d147a3;
+        }
+        .note {
+            text-align: center;
+            color: red;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #d147a3;
+        }
+        .required span::after {
+            content: " *";
+            color: red;
+        }
+        input, textarea, select {
+            width: 70%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ff69b4;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #fff0f5;
+        }
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resume Builder</h1>
+    <p class="note">Please do not leave fields marked with * empty.</p>
+    <div class="container">
+        <div class="form-container">
+            <form id="resume-form">
+                <label class="required"><span>Name</span> <input type="text" id="name"></label>
+                <label class="required"><span>Email</span> <input type="email" id="email"></label>
+                <label><span>Phone</span> <input type="text" id="phone"></label>
+                <label class="required"><span>Education</span> <textarea id="education"></textarea></label>
+                <label class="required"><span>Experience</span> <textarea id="experience"></textarea></label>
+                <label class="required"><span>Skills</span> <textarea id="skills"></textarea></label>
+                <label><span>Achievements</span> <textarea id="achievements"></textarea></label>
+                <label><span>Template</span>
+                    <select id="template">
+                        <option value="compact">Compact</option>
+                        <option value="detailed">Detailed</option>
+                    </select>
+                </label>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
